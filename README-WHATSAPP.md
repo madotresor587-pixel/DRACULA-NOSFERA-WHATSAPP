@@ -13,6 +13,13 @@ npm start
 
 Le script ne supprime aucun fichier et ne remplace pas un fichier `.env` existant.
 
+Pour lancer les vérifications locales :
+```bash
+npm run check
+npm test
+```
+Le dépôt contient aussi un workflow GitHub Actions qui lance ces vérifications à chaque push ou pull request.
+
 ## Appairage
 - QR code : laisser `PHONE_NUMBER=` vide dans `.env`, lancer `npm start`, puis scanner le QR depuis WhatsApp > Appareils connectés.
 - Code d'appairage : renseigner le numéro au format international sans `+`, par exemple `2250700000000`, puis lancer `npm start`.
