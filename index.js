@@ -244,12 +244,22 @@ async function handleMessage(sock, msg) {
       reply = '🛡️ Fonction héritée conservée dans la source Telegram, mais non activée dans le moteur WhatsApp. Cette commande ne bannit, ne débloque et ne signale aucun compte.';
       break;
     case 'premium':
+      reply = "🆓 DRACULA NOSFERA — MODE GRATUIT\\n\\nToutes les fonctionnalités gratuites disponibles sont accessibles.\\nAucune offre payante n'est proposée.";
+      break;
     case 'buy':
+      reply = "🆓 DRACULA NOSFERA est configuré en mode gratuit. Aucun achat n'est nécessaire.";
+      break;
     case 'pay':
+      reply = "💳 Les paiements sont désactivés. Aucune transaction n'est demandée.";
+      break;
     case 'confirm':
+      reply = "ℹ️ La confirmation des paiements est désactivée.";
+      break;
     case 'pending':
+      reply = "ℹ️ Les paiements en attente ne sont plus utilisés.";
+      break;
     case 'payment':
-      reply = '💳 Le système de paiement de la version originale utilise des exemples/coordonnées fictifs. Aucun paiement n’est activé ici. Ne verse aucun argent sur la base de ces commandes.';
+      reply = "ℹ️ Les paiements sont désactivés dans cette version.";
       break;
     case 'proxy_stats':
       reply = '🔒 Les statistiques de proxy de la version Telegram ne sont pas disponibles dans ce moteur WhatsApp.';
