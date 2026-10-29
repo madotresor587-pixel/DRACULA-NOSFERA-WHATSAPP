@@ -21,3 +21,6 @@ venv/
 .venv/
 node_modules/
 *.backup-*
+
+# Local-only archive: may contain credentials or personal data
+SORA-BAN-ORIGINAL-ARCHIVE/
