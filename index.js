@@ -219,7 +219,7 @@ async function handleMessage(sock, msg) {
       reply = argText ? argText.toLocaleLowerCase('fr-FR') : 'Usage : .lower texte';
       break;
     case 'count':
-      reply = argText ? '🔢 Caractères : ' + Array.from(argText).length + '\nMots : ' + (argText.trim() ? argText.trim().split(/\\s+/).length : 0) : 'Usage : .count texte';
+      reply = argText ? '🔢 Caractères : ' + Array.from(argText).length + '\nMots : ' + (argText.trim() ? argText.trim().split(/\s+/).length : 0) : 'Usage : .count texte';
       break;
     case 'date':
       reply = '📅 ' + new Date().toLocaleDateString('fr-FR', { timeZone: 'Africa/Abidjan', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
