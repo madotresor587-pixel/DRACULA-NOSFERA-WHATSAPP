@@ -1,4 +1,4 @@
-name: Node.js syntax check
+name: Node.js checks
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  syntax:
+  syntax-and-smoke:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,5 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install dependencies
+        run: npm install
       - name: Check JavaScript syntax
-        run: node --check index.js
+        run: npm run check
+      - name: Run smoke tests
+        run: npm test
