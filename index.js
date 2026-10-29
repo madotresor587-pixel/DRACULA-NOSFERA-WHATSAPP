@@ -129,11 +129,18 @@ async function handleMessage(sock, msg) {
     }
     case 'stats': {
       const dbStats = readDb();
-      reply = '📊 STATISTIQUES LOCALES\\nMessages traités : ' + (dbStats.messages || 0) +
-        '\\nDémarrage enregistré : ' + (dbStats.startedAt || 'inconnu') +
-        '\\nCes chiffres sont locaux à cette installation.';
+      reply = '📊 STATISTIQUES LOCALES\nMessages traités : ' + (dbStats.messages || 0) +
+        '\nDémarrage enregistré : ' + (dbStats.startedAt || 'inconnu') +
+        '\nCes chiffres sont locaux à cette installation.';
       break;
     }
+    case 'shutdown':
+      if (!isOwner) {
+        reply = '⛔ Commande réservée au propriétaire. Configure OWNER_NUMBER dans .env.';
+        break;
+      }
+      reply = '🛑 Arrêt demandé par le propriétaire.';
+      break;
     case 'calc': {
       const result = safeCalc(argText);
       reply = result === null ? '❌ Calcul non valide. Exemple : .calc 12+8*2' : '🧮 Résultat : ' + result;
@@ -155,8 +162,7 @@ async function handleMessage(sock, msg) {
 
   await sock.sendMessage(jid, { text: reply }, { quoted: msg });
   if (isOwner && command === 'shutdown') {
-    await sock.sendMessage(jid, { text: 'Arrêt demandé par le propriétaire.' }, { quoted: msg });
-    process.exit(0);
+    setTimeout(() => process.exit(0), 250);
   }
 }
 
