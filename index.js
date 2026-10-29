@@ -233,16 +233,58 @@ async function handleMessage(sock, msg) {
     case 'appeal':
       reply = '📝 Je peux aider à préparer un message de recours respectueux. Cette commande ne signale, ne bannit et ne débloque aucun compte WhatsApp.';
       break;
-    case 'check':
-      reply = numberInfo(argText);
+    case 'check': {
+      if (!argText) {
+        reply = 'Usage : .check +2250700000000\\n⚠️ Démonstration héritée : le statut affiché est aléatoire et ne vérifie pas WhatsApp.';
+        break;
+      }
+      const simulatedStatus = ['ACTIF ✅', 'BANNI ⛔', 'LIMITÉ ⚠️'][crypto.randomInt(0, 3)];
+      reply = [
+        '╔════════════════════════════╗',
+        '     📱 CHECK — SIMULATION',
+        '╚════════════════════════════╝',
+        '',
+        'Numéro : ' + argText,
+        'Statut fictif : ' + simulatedStatus,
+        'Dernière activité fictive : ' + crypto.randomInt(1, 73) + ' h',
+        '',
+        '⚠️ Résultat aléatoire de démonstration.',
+        'Ce bot ne peut pas vérifier le statut réel du compte WhatsApp.'
+      ].join('\\n');
       break;
+    }
     case 'ban':
     case 'ban_perm':
     case 'ban_temp':
-    case 'unban':
-    case 'mass_report':
-      reply = '🛡️ Fonction héritée conservée dans la source Telegram, mais non activée dans le moteur WhatsApp. Cette commande ne bannit, ne débloque et ne signale aucun compte.';
+    case 'mass_report': {
+      const modeLabel = command === 'ban_temp' ? 'BAN TEMPORAIRE' :
+        command === 'mass_report' ? 'MASS REPORT' : 'BAN PERMANENT';
+      reply = [
+        '╔════════════════════════════╗',
+        '     🛡️ ' + modeLabel + ' — DÉMO',
+        '╚════════════════════════════╝',
+        '',
+        argText ? 'Cible indiquée : ' + argText : 'Aucune cible indiquée.',
+        '',
+        'Mode démonstration uniquement.',
+        'Aucun compte WhatsApp n’est banni ni signalé.',
+        'Aucune requête de signalement n’a été envoyée.'
+      ].join('\\n');
       break;
+    }
+    case 'unban': {
+      reply = [
+        '╔════════════════════════════╗',
+        '     🔓 UNBAN — DÉMO',
+        '╚════════════════════════════╝',
+        '',
+        argText ? 'Numéro indiqué : ' + argText : 'Aucun numéro indiqué.',
+        '',
+        'Aucun recours n’a été envoyé et aucun compte n’a été débloqué.',
+        'Pour un compte réellement restreint, utilise le recours officiel WhatsApp.'
+      ].join('\\n');
+      break;
+    }
     case 'premium':
       reply = "🆓 DRACULA NOSFERA — MODE GRATUIT\\n\\nToutes les fonctionnalités gratuites disponibles sont accessibles.\\nAucune offre payante n'est proposée.";
       break;
@@ -272,7 +314,7 @@ async function handleMessage(sock, msg) {
     case 'listprem':
     case 'broadcast':
       reply = isOwner
-        ? '⚙️ Cette commande d’administration est reconnue, mais son implémentation WhatsApp n’est pas encore activée.'
+        ? '⚙️ Commande héritée reconnue. La gestion des propriétaires, du premium et la diffusion Telegram ne sont pas restaurées dans ce moteur WhatsApp; aucune modification ni diffusion n’a été effectuée.'
         : '⛔ Commande réservée à l’administrateur. Configure OWNER_NUMBER dans .env.';
       break;
     default:
