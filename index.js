@@ -64,6 +64,9 @@ function menu() {
     '┃ .stats',
     '┃ .uptime',
     '┃ .appeal',
+    '┃ .check +2250700000000',
+    '┃ .premium / .buy / .pay',
+    '┃ .proxy_stats',
     '┗━━━━━━━━━━━━━━━━━━━━',
     '',
     'Créateur : ' + CREATOR,
@@ -229,6 +232,38 @@ async function handleMessage(sock, msg) {
       break;
     case 'appeal':
       reply = '📝 Je peux aider à préparer un message de recours respectueux. Cette commande ne signale, ne bannit et ne débloque aucun compte WhatsApp.';
+      break;
+    case 'check':
+      reply = numberInfo(argText);
+      break;
+    case 'ban':
+    case 'ban_perm':
+    case 'ban_temp':
+    case 'unban':
+    case 'mass_report':
+      reply = '🛡️ Fonction héritée conservée dans la source Telegram, mais non activée dans le moteur WhatsApp. Cette commande ne bannit, ne débloque et ne signale aucun compte.';
+      break;
+    case 'premium':
+    case 'buy':
+    case 'pay':
+    case 'confirm':
+    case 'pending':
+    case 'payment':
+      reply = '💳 Le système de paiement de la version originale utilise des exemples/coordonnées fictifs. Aucun paiement n’est activé ici. Ne verse aucun argent sur la base de ces commandes.';
+      break;
+    case 'proxy_stats':
+      reply = '🔒 Les statistiques de proxy de la version Telegram ne sont pas disponibles dans ce moteur WhatsApp.';
+      break;
+    case 'addowner':
+    case 'delowner':
+    case 'addprem':
+    case 'delprem':
+    case 'listowners':
+    case 'listprem':
+    case 'broadcast':
+      reply = isOwner
+        ? '⚙️ Cette commande d’administration est reconnue, mais son implémentation WhatsApp n’est pas encore activée.'
+        : '⛔ Commande réservée à l’administrateur. Configure OWNER_NUMBER dans .env.';
       break;
     default:
       reply = '❓ Commande inconnue : ' + PREFIX + command + '\nTape ' + PREFIX + 'menu pour afficher les commandes.';
