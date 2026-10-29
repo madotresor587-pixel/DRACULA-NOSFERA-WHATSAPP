@@ -165,6 +165,18 @@ async function startBot() {
 
   sock.ev.on('creds.update', saveCreds);
 
+  if (PHONE_NUMBER && !state.creds.registered) {
+    setTimeout(async () => {
+      try {
+        const code = await sock.requestPairingCode(PHONE_NUMBER);
+        console.log('\n🔐 CODE D’APPAIRAGE : ' + code + '\n');
+        console.log('Entre ce code dans WhatsApp > Appareils connectés > Associer avec un numéro de téléphone.');
+      } catch (err) {
+        console.error('Impossible de générer le code d’appairage :', err.message || err);
+      }
+    }, 3000);
+  }
+
   sock.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect, qr } = update;
     if (qr && !PHONE_NUMBER) {
@@ -175,15 +187,6 @@ async function startBot() {
     if (connection === 'connecting') console.log('⏳ Connexion à WhatsApp...');
     if (connection === 'open') {
       console.log('✅ ' + BOT_NAME + ' connecté à WhatsApp.');
-      if (PHONE_NUMBER && !sock.authState.creds.registered) {
-        try {
-          const code = await sock.requestPairingCode(PHONE_NUMBER);
-          console.log('\n🔐 CODE D’APPAIRAGE : ' + code + '\n');
-          console.log('Entre ce code dans WhatsApp > Appareils connectés > Associer avec un numéro de téléphone.');
-        } catch (err) {
-          console.error('Impossible de générer le code d’appairage :', err.message || err);
-        }
-      }
     }
 
     if (connection === 'close') {
