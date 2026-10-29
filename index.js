@@ -235,12 +235,12 @@ async function handleMessage(sock, msg) {
       reply = '📝 Je peux aider à préparer un message de recours respectueux. Cette commande ne signale, ne bannit et ne débloque aucun compte WhatsApp.';
       break;
     case 'report': {
-      const target = String(argText || '').replace(/[\\s().-]/g, '');
-      if (!/^\\+?[1-9]\\d{6,14}$/.test(target)) {
-        reply = 'Usage : .report +225XXXXXXXX\\nIndique le numéro au format international. Aucun signalement n’est envoyé par cette commande.';
+      const target = String(argText || '').replace(/[\s().-]/g, '');
+      if (!/^\+?[1-9]\d{6,14}$/.test(target)) {
+        reply = 'Usage : .report +225XXXXXXXX\nIndique le numéro au format international. Aucun signalement n’est envoyé par cette commande.';
         break;
       }
-      const digits = target.replace(/^\\+/, '');
+      const digits = target.replace(/^\+/, '');
       reply = [
         '🛡️ SIGNALEMENT WHATSAPP — AIDE OFFICIELLE',
         '',
@@ -255,7 +255,7 @@ async function handleMessage(sock, msg) {
         '4. Si tu es en danger, conserve les preuves et contacte une personne de confiance ou les services d’urgence locaux.',
         '',
         'Un signalement doit être fondé sur un comportement réellement abusif. Aucun envoi répété ou automatique n’est effectué.'
-      ].join('\\n');
+      ].join('\n');
       break;
     }
     case 'check': {
