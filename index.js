@@ -27,7 +27,7 @@ fs.mkdirSync(DATA_DIR, { recursive: true });
 
 function readDb() {
   try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); }
-  catch { return { startedAt: new Date().toISOString(), messages: 0, users: [], groupBans: {} }; }
+  catch { return { startedAt: new Date().toISOString(), messages: 0, users: [] }; }
 }
 function writeDb(db) {
   const tmp = DB_PATH + '.tmp';
@@ -65,10 +65,6 @@ function menu() {
     '┃ .uptime',
     '┃ .appeal',
     '┃ .check +2250700000000',
-    '┃ .ban_perm +numéro (groupe/admin)',
-    '┃ .ban_temp +numéro 10m (groupe/admin)',
-    '┃ .unban +numéro (groupe/admin)',
-    '┃ .mass_report (non pris en charge par WhatsApp)',
     '┃ .premium / .buy / .pay',
     '┃ .proxy_stats',
     '┗━━━━━━━━━━━━━━━━━━━━',
@@ -118,7 +114,6 @@ async function handleMessage(sock, msg) {
   const isOwner = Boolean(OWNER_NUMBER) && sender.split('@')[0].replace(/\D/g, '') === OWNER_NUMBER;
 
   const db = readDb();
-  if (!db.groupBans || typeof db.groupBans !== 'object') db.groupBans = {};
   db.messages = (db.messages || 0) + 1;
   writeDb(db);
 
@@ -261,86 +256,33 @@ async function handleMessage(sock, msg) {
     case 'ban':
     case 'ban_perm':
     case 'ban_temp':
-    case 'unban': {
-      if (!jid.endsWith('@g.us')) {
-        reply = '⚠️ Cette commande fonctionne uniquement dans un groupe WhatsApp. Elle modère ce groupe, pas le compte WhatsApp dans son ensemble.';
-        break;
-      }
-      const targetInput = args[0] || '';
-      const digits = targetInput.replace(/\\D/g, '');
-      if (!digits || digits.length < 7 || digits.length > 15) {
-        reply = 'Usage : ' + PREFIX + command + ' +2250700000000' + (command === 'ban_temp' ? ' 10m' : '');
-        break;
-      }
-      try {
-        const metadata = await sock.groupMetadata(jid);
-        const senderId = sender.split('@')[0];
-        const senderParticipant = metadata.participants.find(p => (p.id || '').split('@')[0] === senderId);
-        const botId = (sock.user?.id || '').split(':')[0].split('@')[0];
-        const botParticipant = metadata.participants.find(p => (p.id || '').split('@')[0] === botId);
-        const senderIsAdmin = Boolean(senderParticipant && (senderParticipant.admin === 'admin' || senderParticipant.admin === 'superadmin'));
-        const botIsAdmin = Boolean(botParticipant && (botParticipant.admin === 'admin' || botParticipant.admin === 'superadmin'));
-        if (!isOwner && !senderIsAdmin) {
-          reply = '⛔ Seuls le propriétaire configuré ou les administrateurs du groupe peuvent utiliser cette commande.';
-          break;
-        }
-        if (command !== 'unban' && !botIsAdmin) {
-          reply = '⛔ Le bot doit être administrateur du groupe pour retirer un membre.';
-          break;
-        }
-        const targetJid = digits + '@s.whatsapp.net';
-        const groupBans = readDb().groupBans || {};
-        if (command === 'unban') {
-          if (groupBans[jid]) delete groupBans[jid][digits];
-          const updated = readDb();
-          updated.groupBans = groupBans;
-          writeDb(updated);
-          reply = '🔓 ' + digits + ' retiré de la liste de blocage de ce groupe. Cette commande ne débloque pas un compte WhatsApp globalement et ne réinvite pas la personne.';
-          break;
-        }
-        let expiresAt = null;
-        if (command === 'ban_temp') {
-          const duration = args[1] || '1h';
-          const match = duration.match(/^(\\d{1,5})(m|h|d)$/i);
-          if (!match) {
-            reply = 'Durée invalide. Exemple : ' + PREFIX + 'ban_temp +2250700000000 10m (m, h ou d).';
-            break;
-          }
-          const amount = Number(match[1]);
-          const unit = match[2].toLowerCase();
-          const multiplier = unit === 'm' ? 60000 : unit === 'h' ? 3600000 : 86400000;
-          const durationMs = amount * multiplier;
-          if (amount < 1 || durationMs > 30 * 86400000) {
-            reply = 'La durée doit être comprise entre 1 unité et 30 jours maximum.';
-            break;
-          }
-          expiresAt = Date.now() + durationMs;
-        }
-        const latest = readDb();
-        if (!latest.groupBans || typeof latest.groupBans !== 'object') latest.groupBans = {};
-        if (!latest.groupBans[jid]) latest.groupBans[jid] = {};
-        latest.groupBans[jid][digits] = { expiresAt, by: senderId, createdAt: Date.now() };
-        writeDb(latest);
-        try {
-          await sock.groupParticipantsUpdate(jid, [targetJid], 'remove');
-          reply = command === 'ban_temp'
-            ? '🛡️ Exclusion temporaire du groupe effectuée pour ' + digits + '. Durée : ' + (args[1] || '1h') + '. Si la personne rejoint à nouveau avant expiration, le bot la retirera tant qu’il reste administrateur.'
-            : '🛡️ Exclusion du groupe effectuée pour ' + digits + '. Le blocage est mémorisé pour ce groupe et la personne sera retirée si elle rejoint à nouveau. Cela ne bannit pas son compte WhatsApp globalement.';
-        } catch (removeError) {
-          const rollback = readDb();
-          if (rollback.groupBans?.[jid]) {
-            delete rollback.groupBans[jid][digits];
-            writeDb(rollback);
-          }
-          reply = '❌ WhatsApp a refusé l’exclusion. Vérifie que le bot est administrateur et que la cible est un membre de ce groupe.';
-        }
-      } catch (groupError) {
-        reply = '❌ Impossible de vérifier les droits du groupe. Réessaie lorsque la connexion WhatsApp est stable.';
-      }
+    case 'mass_report': {
+      const modeLabel = command === 'ban_temp' ? 'BAN TEMPORAIRE' :
+        command === 'mass_report' ? 'MASS REPORT' : 'BAN PERMANENT';
+      reply = [
+        '╔════════════════════════════╗',
+        '     🛡️ ' + modeLabel + ' — DÉMO',
+        '╚════════════════════════════╝',
+        '',
+        argText ? 'Cible indiquée : ' + argText : 'Aucune cible indiquée.',
+        '',
+        'Mode démonstration uniquement.',
+        'Aucun compte WhatsApp n’est banni ni signalé.',
+        'Aucune requête de signalement n’a été envoyée.'
+      ].join('\\n');
       break;
     }
-    case 'mass_report': {
-      reply = '⚠️ WhatsApp ne fournit pas à ce bot de commande officielle permettant de lancer des signalements massifs. Aucun signalement n’a été envoyé. Tu peux utiliser les outils de signalement officiels de WhatsApp pour un contenu précis.';
+    case 'unban': {
+      reply = [
+        '╔════════════════════════════╗',
+        '     🔓 UNBAN — DÉMO',
+        '╚════════════════════════════╝',
+        '',
+        argText ? 'Numéro indiqué : ' + argText : 'Aucun numéro indiqué.',
+        '',
+        'Aucun recours n’a été envoyé et aucun compte n’a été débloqué.',
+        'Pour un compte réellement restreint, utilise le recours officiel WhatsApp.'
+      ].join('\\n');
       break;
     }
     case 'premium':
@@ -448,34 +390,6 @@ async function startBot() {
     for (const msg of messages) {
       try { await handleMessage(sock, msg); }
       catch (err) { console.error('Erreur de commande :', err.message || err); }
-    }
-  });
-
-  sock.ev.on('group-participants.update', async (event) => {
-    if (event.action !== 'add' || !event.id) return;
-    try {
-      const db = readDb();
-      const bans = db.groupBans?.[event.id] || {};
-      const now = Date.now();
-      for (const participant of (event.participants || [])) {
-        const digits = (participant || '').split('@')[0].replace(/\\D/g, '');
-        const ban = bans[digits];
-        if (!ban) continue;
-        if (ban.expiresAt && ban.expiresAt <= now) {
-          delete bans[digits];
-          writeDb(db);
-          continue;
-        }
-        const metadata = await sock.groupMetadata(event.id);
-        const botId = (sock.user?.id || '').split(':')[0].split('@')[0];
-        const bot = metadata.participants.find(p => (p.id || '').split(':')[0].split('@')[0] === botId);
-        if (bot && (bot.admin === 'admin' || bot.admin === 'superadmin')) {
-          await sock.groupParticipantsUpdate(event.id, [participant], 'remove');
-        }
-      }
-      writeDb(db);
-    } catch (err) {
-      console.error('Échec de l’application de la liste de blocage du groupe :', err.message || err);
     }
   });
 }
