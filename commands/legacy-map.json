@@ -1,0 +1,80 @@
+{
+  "title": "SORA BAN BOT legacy feature inventory",
+  "policy": "Keep original files untouched. This file maps old feature families to possible WhatsApp equivalents; it does not claim every legacy command is ported.",
+  "preserveOriginal": true,
+  "families": [
+    {
+      "legacy": [
+        "start",
+        "help",
+        "menu",
+        "info",
+        "contact"
+      ],
+      "status": "partially-ported",
+      "whatsapp": [
+        "menu",
+        "help",
+        "info",
+        "owner"
+      ]
+    },
+    {
+      "legacy": [
+        "stats",
+        "uptime"
+      ],
+      "status": "ported-local",
+      "whatsapp": [
+        "stats",
+        "uptime"
+      ]
+    },
+    {
+      "legacy": [
+        "check"
+      ],
+      "status": "safe-replacement",
+      "whatsapp": [
+        "number",
+        "numberinfo"
+      ],
+      "note": "Only validates international number formatting; it cannot check WhatsApp account status."
+    },
+    {
+      "legacy": [
+        "ban_perm",
+        "ban_temp",
+        "unban",
+        "mass_report"
+      ],
+      "status": "legacy-source-only",
+      "note": "Original code remains preserved. The inherited implementation is simulated; no actual account action is claimed."
+    },
+    {
+      "legacy": [
+        "premium",
+        "buy",
+        "pay"
+      ],
+      "status": "not-ported",
+      "note": "Original demo prices and placeholder payment details are not real payment integration."
+    },
+    {
+      "legacy": [
+        "owners",
+        "addprem",
+        "broadcast"
+      ],
+      "status": "not-ported",
+      "note": "Requires carefully designed authorization and anti-spam protections before any implementation."
+    },
+    {
+      "legacy": [
+        "proxy manager"
+      ],
+      "status": "legacy-source-only",
+      "note": "Never commit proxy credentials or secrets."
+    }
+  ]
+}
