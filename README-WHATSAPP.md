@@ -41,6 +41,9 @@ Ne partage jamais le dossier `sessions/`, le fichier `.env`, les jetons ou les i
 - `.count texte` — compter caractères et mots
 - `.date` — date en français, fuseau Côte d’Ivoire
 - `.appeal`
+- Compatibilité de noms hérités : `.check`, `.ban_perm`, `.ban_temp`, `.unban`, `.mass_report`, `.premium`, `.buy`, `.pay`, `.confirm`, `.pending`, `.payment`, `.proxy_stats`, `.addowner`, `.delowner`, `.addprem`, `.delprem`, `.listowners`, `.listprem`, `.broadcast`.
+
+**Important :** les commandes héritées de bannissement/signalement, de paiement et d’administration sont des réponses de compatibilité, pas des fonctions actives. Les anciens résultats simulés et moyens de paiement fictifs ne sont pas reproduits.
 
 Les statistiques sont locales à cette installation. La commande de numéro valide uniquement la forme internationale et ne confirme pas qu'un compte WhatsApp existe.
 
