@@ -310,7 +310,11 @@ async function startBot() {
 process.on('unhandledRejection', err => console.error('Erreur asynchrone :', err));
 process.on('uncaughtException', err => console.error('Erreur interne :', err));
 
-startBot().catch(err => {
-  console.error('Échec du démarrage :', err);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  startBot().catch(err => {
+    console.error('Échec du démarrage :', err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { menu, safeCalc, numberInfo };
