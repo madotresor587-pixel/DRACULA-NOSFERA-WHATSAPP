@@ -65,6 +65,7 @@ function menu() {
     '┃ .uptime',
     '┃ .appeal',
     '┃ .check +2250700000000',
+    '┃ .report +225XXXXXXXX',
     '┃ .premium / .buy / .pay',
     '┃ .proxy_stats',
     '┗━━━━━━━━━━━━━━━━━━━━',
@@ -233,6 +234,30 @@ async function handleMessage(sock, msg) {
     case 'appeal':
       reply = '📝 Je peux aider à préparer un message de recours respectueux. Cette commande ne signale, ne bannit et ne débloque aucun compte WhatsApp.';
       break;
+    case 'report': {
+      const target = String(argText || '').replace(/[\\s().-]/g, '');
+      if (!/^\\+?[1-9]\\d{6,14}$/.test(target)) {
+        reply = 'Usage : .report +225XXXXXXXX\\nIndique le numéro au format international. Aucun signalement n’est envoyé par cette commande.';
+        break;
+      }
+      const digits = target.replace(/^\\+/, '');
+      reply = [
+        '🛡️ SIGNALEMENT WHATSAPP — AIDE OFFICIELLE',
+        '',
+        'Numéro indiqué : +' + digits,
+        '',
+        '⚠️ Baileys ne fournit pas d’API publique permettant d’envoyer un signalement de compte. Cette commande n’envoie donc aucun signalement et ne prétend pas le faire.',
+        '',
+        'Pour effectuer un vrai signalement :',
+        '1. Ouvre WhatsApp et accède à la conversation avec ce numéro.',
+        '2. Appuie sur le nom/numéro en haut de la conversation.',
+        '3. Choisis « Signaler le contact » si cette option est proposée, puis suis les instructions de WhatsApp.',
+        '4. Si tu es en danger, conserve les preuves et contacte une personne de confiance ou les services d’urgence locaux.',
+        '',
+        'Un signalement doit être fondé sur un comportement réellement abusif. Aucun envoi répété ou automatique n’est effectué.'
+      ].join('\\n');
+      break;
+    }
     case 'check': {
       if (!argText) {
         reply = 'Usage : .check +2250700000000\\n⚠️ Démonstration héritée : le statut affiché est aléatoire et ne vérifie pas WhatsApp.';
