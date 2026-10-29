@@ -25,6 +25,9 @@ Ne partage jamais le dossier `sessions/`, le fichier `.env`, les jetons ou les i
 - `.time`, `.uptime`, `.stats`
 - `.calc 12+8*2`
 - `.number +2250700000000`, `.numberinfo +2250700000000`
+- `.id`
+- `.encode texte`, `.decode BASE64`, `.hash texte`
+- `.passgen 20` (génère un mot de passe localement)
 - `.appeal`
 
 Les statistiques sont locales à cette installation. La commande de numéro valide uniquement la forme internationale et ne confirme pas qu'un compte WhatsApp existe.
