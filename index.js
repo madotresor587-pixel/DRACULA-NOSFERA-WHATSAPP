@@ -49,6 +49,9 @@ function menu() {
     '┃ .time',
     '┃ .calc 12+8',
     '┃ .number +2250700000000',
+    '┃ .stats',
+    '┃ .uptime',
+    '┃ .appeal',
     '┗━━━━━━━━━━━━━━━━━━━━',
     '',
     'Créateur : ' + CREATOR,
@@ -117,6 +120,20 @@ async function handleMessage(sock, msg) {
     case 'time':
       reply = '🕒 ' + new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Abidjan' }) + ' (heure Côte d’Ivoire)';
       break;
+    case 'uptime': {
+      const seconds = Math.floor(process.uptime());
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      reply = '⏱️ Temps de fonctionnement : ' + hours + ' h ' + minutes + ' min ' + (seconds % 60) + ' s';
+      break;
+    }
+    case 'stats': {
+      const dbStats = readDb();
+      reply = '📊 STATISTIQUES LOCALES\\nMessages traités : ' + (dbStats.messages || 0) +
+        '\\nDémarrage enregistré : ' + (dbStats.startedAt || 'inconnu') +
+        '\\nCes chiffres sont locaux à cette installation.';
+      break;
+    }
     case 'calc': {
       const result = safeCalc(argText);
       reply = result === null ? '❌ Calcul non valide. Exemple : .calc 12+8*2' : '🧮 Résultat : ' + result;
