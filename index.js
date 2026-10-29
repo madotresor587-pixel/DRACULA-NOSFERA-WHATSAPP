@@ -12,6 +12,7 @@ const {
 } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const BOT_NAME = process.env.BOT_NAME || 'DRACULA NOSFERA';
 const CREATOR = process.env.CREATOR || 'MADO';
@@ -49,6 +50,11 @@ function menu() {
     '┃ .time',
     '┃ .calc 12+8',
     '┃ .number +2250700000000',
+    '┃ .id',
+    '┃ .encode texte',
+    '┃ .decode BASE64',
+    '┃ .hash texte',
+    '┃ .passgen 20',
     '┃ .stats',
     '┃ .uptime',
     '┃ .appeal',
@@ -150,6 +156,36 @@ async function handleMessage(sock, msg) {
     case 'numberinfo':
       reply = numberInfo(argText);
       break;
+    case 'id':
+      reply = '🆔 Identifiant WhatsApp : ' + sender;
+      break;
+    case 'encode':
+      reply = argText ? '🔐 Base64 : ' + Buffer.from(argText, 'utf8').toString('base64') : 'Usage : .encode texte';
+      break;
+    case 'decode': {
+      try {
+        if (!args[0] || !/^[A-Za-z0-9+/]*={0,2}$/.test(args[0]) || args[0].length % 4 !== 0) throw new Error('invalid');
+        const decoded = Buffer.from(args[0], 'base64').toString('utf8');
+        if (!decoded || decoded.includes('\uFFFD')) throw new Error('invalid');
+        reply = '🔓 Texte décodé : ' + decoded.slice(0, 3000);
+      } catch {
+        reply = '❌ Base64 invalide. Exemple : .decode SGVsbG8=';
+      }
+      break;
+    }
+    case 'hash':
+      reply = argText ? '🔏 SHA-256 : ' + crypto.createHash('sha256').update(argText, 'utf8').digest('hex') : 'Usage : .hash texte';
+      break;
+    case 'passgen': {
+      const requested = Number.parseInt(args[0] || '16', 10);
+      const length = Number.isFinite(requested) ? Math.max(8, Math.min(64, requested)) : 16;
+      const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*';
+      const bytes = crypto.randomBytes(length);
+      let password = '';
+      for (const byte of bytes) password += alphabet[byte % alphabet.length];
+      reply = '🔑 Mot de passe généré (' + length + ' caractères) :\n' + password + '\n⚠️ Ne le partage pas dans un groupe.';
+      break;
+    }
     case 'owner':
       reply = OWNER_NUMBER ? '👑 Créateur : ' + CREATOR + '\nNuméro configuré : +' + OWNER_NUMBER : '👑 Créateur : ' + CREATOR + '\nConfigure OWNER_NUMBER dans .env pour afficher le numéro.';
       break;
