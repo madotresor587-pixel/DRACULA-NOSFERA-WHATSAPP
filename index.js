@@ -55,6 +55,12 @@ function menu() {
     '┃ .decode BASE64',
     '┃ .hash texte',
     '┃ .passgen 20',
+    '┃ .uuid',
+    '┃ .random 1 100',
+    '┃ .reverse texte',
+    '┃ .upper texte / .lower texte',
+    '┃ .count texte',
+    '┃ .date',
     '┃ .stats',
     '┃ .uptime',
     '┃ .appeal',
@@ -186,6 +192,38 @@ async function handleMessage(sock, msg) {
       reply = '🔑 Mot de passe généré (' + length + ' caractères) :\n' + password + '\n⚠️ Ne le partage pas dans un groupe.';
       break;
     }
+    case 'uuid':
+      reply = '🆔 UUID : ' + crypto.randomUUID();
+      break;
+    case 'random': {
+      if (args.length < 2) {
+        reply = 'Usage : .random 1 100';
+        break;
+      }
+      const min = Number(args[0]);
+      const max = Number(args[1]);
+      if (!Number.isSafeInteger(min) || !Number.isSafeInteger(max) || max < min || max - min > 1000000000) {
+        reply = '❌ Indique deux entiers valides, avec max supérieur ou égal à min.';
+        break;
+      }
+      reply = '🎲 Nombre aléatoire : ' + crypto.randomInt(min, max + 1);
+      break;
+    }
+    case 'reverse':
+      reply = argText ? '↩️ ' + Array.from(argText).reverse().join('') : 'Usage : .reverse texte';
+      break;
+    case 'upper':
+      reply = argText ? argText.toLocaleUpperCase('fr-FR') : 'Usage : .upper texte';
+      break;
+    case 'lower':
+      reply = argText ? argText.toLocaleLowerCase('fr-FR') : 'Usage : .lower texte';
+      break;
+    case 'count':
+      reply = argText ? '🔢 Caractères : ' + Array.from(argText).length + '\nMots : ' + (argText.trim() ? argText.trim().split(/\\s+/).length : 0) : 'Usage : .count texte';
+      break;
+    case 'date':
+      reply = '📅 ' + new Date().toLocaleDateString('fr-FR', { timeZone: 'Africa/Abidjan', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      break;
     case 'owner':
       reply = OWNER_NUMBER ? '👑 Créateur : ' + CREATOR + '\nNuméro configuré : +' + OWNER_NUMBER : '👑 Créateur : ' + CREATOR + '\nConfigure OWNER_NUMBER dans .env pour afficher le numéro.';
       break;
