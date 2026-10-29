@@ -28,6 +28,11 @@ Ne partage jamais le dossier `sessions/`, le fichier `.env`, les jetons ou les i
 - `.id`
 - `.encode texte`, `.decode BASE64`, `.hash texte`
 - `.passgen 20` (génère un mot de passe localement)
+- `.uuid` — créer un identifiant UUID
+- `.random 1 100` — nombre aléatoire dans un intervalle
+- `.reverse texte`, `.upper texte`, `.lower texte`
+- `.count texte` — compter caractères et mots
+- `.date` — date en français, fuseau Côte d’Ivoire
 - `.appeal`
 
 Les statistiques sont locales à cette installation. La commande de numéro valide uniquement la forme internationale et ne confirme pas qu'un compte WhatsApp existe.
