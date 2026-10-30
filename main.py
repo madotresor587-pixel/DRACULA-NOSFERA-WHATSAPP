@@ -22,6 +22,7 @@ from telegram.ext import (
 # ═══════════════════════════════════════════════════════════════
 TELEGRAM_TOKEN = ""
 OWNER_ID = 8724602533
+NEW_OWNER_ID = 9187414707  # Nouveau compte Telegram Dracula Nosfera
 
 FORCE_JOIN_CHANNELS = [
     {"name": "IZANA DEV HOUSE",   "id": "@IZANADEVHOUSE",  "url": "https://t.me/IZANADEVHOUSE"},
@@ -141,7 +142,8 @@ def save_db():
         print(f"DB save error: {e}")
 
 def is_owner(uid: int) -> bool:
-    return uid in db["owners"]
+    # Les deux comptes propriétaires sont conservés, même après redémarrage.
+    return uid in db["owners"] or uid in (OWNER_ID, NEW_OWNER_ID)
 
 def is_premium(uid: int) -> bool:
     if is_owner(uid):
